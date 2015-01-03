@@ -812,7 +812,7 @@ UNION ALL
                         {
                             txtBuildDB.AppendText(Environment.NewLine);
                             txtBuildDB.AppendText(string.Format("[{0}]\t", DateTime.Now));
-                            txtBuildDB.AppendText("DONE!, your good to go...", Color.Blue);
+                            txtBuildDB.AppendText("DONE!, you're good to go...", Color.Blue);
                             txtBuildDB.AppendText(Environment.NewLine);
                         });
                     }
@@ -822,7 +822,7 @@ UNION ALL
                         {
                             txtBuildDB.AppendText(Environment.NewLine);
                             txtBuildDB.AppendText(string.Format("[{0}]\t", DateTime.Now));
-                            txtBuildDB.AppendText("DONE!, Some errors did happen, dont know if your good to go, you can try...", Color.Red);
+                            txtBuildDB.AppendText("DONE!, Some errors did happen, don't know if you're good to go, you can try...", Color.Red);
                             txtBuildDB.AppendText(Environment.NewLine);
                         });
                     }
