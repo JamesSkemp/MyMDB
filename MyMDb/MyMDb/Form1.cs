@@ -54,41 +54,47 @@ namespace MyMDb
         private void TabPages(bool show)
         {
             int showupto = 3;
-            if (tabControl1.InvokeRequired)
-            {
-                tabControl1.Invoke((MethodInvoker)delegate
-                {
-                    if (show)
-                        for (int i = 0; i < showupto; i++)
-                        {
-                            if (!tabControl1.TabPages.Contains(hidePages[i]))
-                                tabControl1.TabPages.Add(hidePages[i]);
-                        }
-                    else
-                    {
-                        for (int i = 0; i < 3; i++)
-                            hidePages[i] = tabControl1.TabPages[i + 1];
-                        for (int i = 3; i > 0; i--)
-                            tabControl1.TabPages.RemoveAt(i);
-                    }
-                });
-            }
-            else
-            {
-                if (show)
-                    for (int i = 0; i < showupto; i++)
-                    {
-                        if (!tabControl1.TabPages.Contains(hidePages[i]))
-                            tabControl1.TabPages.Add(hidePages[i]);
-                    }
-                else
-                {
-                    for (int i = 0; i < 3; i++)
-                        hidePages[i] = tabControl1.TabPages[i + 1];
-                    for (int i = 3; i > 0; i--)
-                        tabControl1.TabPages.RemoveAt(i);
-                }
-            }
+			if (tabControl1.InvokeRequired)
+			{
+				tabControl1.Invoke((MethodInvoker)delegate
+				{
+					if (show)
+					{
+						for (int i = 0; i < showupto; i++)
+						{
+							if (!tabControl1.TabPages.Contains(hidePages[i]))
+								tabControl1.TabPages.Add(hidePages[i]);
+						}
+					}
+					else if (tabControl1.TabPages.Count > 1)
+					{
+						for (int i = 0; i < 3; i++)
+							hidePages[i] = tabControl1.TabPages[i + 1];
+						for (int i = 3; i > 0; i--)
+							tabControl1.TabPages.RemoveAt(i);
+					}
+				});
+			}
+			else
+			{
+				if (show)
+					for (int i = 0; i < showupto; i++)
+					{
+						if (!tabControl1.TabPages.Contains(hidePages[i]))
+							tabControl1.TabPages.Add(hidePages[i]);
+					}
+				else
+				{
+					for (int i = 0; i < 3; i++)
+					{
+						hidePages[i] = tabControl1.TabPages[i + 1];
+					}
+					for (int i = 3; i > 0; i--)
+					{
+						tabControl1.TabPages.RemoveAt(i);
+					}
+				}
+			}
         }
 
         private Dictionary<string, short> GetGenresTable()
