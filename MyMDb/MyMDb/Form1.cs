@@ -51,9 +51,9 @@ namespace MyMDb
             ftpClient.Dispose();
         }
 
-        private void TabPages(bool show)
-        {
-            int showupto = 3;
+		private void TabPages(bool show)
+		{
+			int showupto = 3;
 			if (tabControl1.InvokeRequired)
 			{
 				tabControl1.Invoke((MethodInvoker)delegate
@@ -95,7 +95,7 @@ namespace MyMDb
 					}
 				}
 			}
-        }
+		}
 
         private Dictionary<string, short> GetGenresTable()
         {
@@ -890,33 +890,33 @@ UNION ALL
             return value;
         }
 
-        private bool DBExists(string dbname)
-        {
-            if (string.IsNullOrEmpty(Program.connstr))
-                return false;
-            bool rtn = true;
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(Program.connstr))
-                {
-                    conn.Open();
-                    using (SqlCommand com = new SqlCommand("SELECT name FROM sys.databases WHERE name = @dbname", conn))
-                    {
-                        com.Parameters.AddWithValue("@dbname", dbname);
-                        using (SqlDataReader rs = com.ExecuteReader())
-                        {
-                            rs.Read();
-                            rtn = !rs.IsDBNull(0);
-                        }
-                    }
-                }
-            }
-            finally
-            {
+		private bool DBExists(string dbname)
+		{
+			if (string.IsNullOrEmpty(Program.connstr))
+				return false;
+			bool dbExists = true;
+			try
+			{
+				using (SqlConnection conn = new SqlConnection(Program.connstr))
+				{
+					conn.Open();
+					using (SqlCommand com = new SqlCommand("SELECT name FROM sys.databases WHERE name = @dbname", conn))
+					{
+						com.Parameters.AddWithValue("@dbname", dbname);
+						using (SqlDataReader rs = com.ExecuteReader())
+						{
+							rs.Read();
+							dbExists = rs.HasRows && !rs.IsDBNull(0);
+						}
+					}
+				}
+			}
+			finally
+			{
 
-            }
-            return rtn;
-        }
+			}
+			return dbExists;
+		}
 
         private long RowCount(string objName)
         {
