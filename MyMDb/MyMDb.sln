@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMDb", "MyMDb\MyMDb.csproj", "{BADBDE63-3B0F-454F-9711-161896B2D6F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawJershauge.IMDBFlatFiles", "..\PawJershauge.IMDBFlatFiles\PawJershauge.IMDBFlatFiles.csproj", "{854812F4-1E66-421B-89FE-F281953756EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BADBDE63-3B0F-454F-9711-161896B2D6F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BADBDE63-3B0F-454F-9711-161896B2D6F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BADBDE63-3B0F-454F-9711-161896B2D6F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BADBDE63-3B0F-454F-9711-161896B2D6F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{854812F4-1E66-421B-89FE-F281953756EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{854812F4-1E66-421B-89FE-F281953756EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{854812F4-1E66-421B-89FE-F281953756EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{854812F4-1E66-421B-89FE-F281953756EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
