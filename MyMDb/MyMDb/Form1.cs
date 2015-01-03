@@ -963,6 +963,7 @@ UNION ALL
                 //cbFtp_Aka.Enabled = bntDownloadData.Enabled;
                 //cbFtp_Act.Enabled = bntDownloadData.Enabled;
                 //cbFtp_Acs.Enabled = bntDownloadData.Enabled;
+				checkBoxDistributors.Enabled = bntDownloadData.Enabled;
                 FreeSpaceOK();
             }
         }
@@ -1026,6 +1027,10 @@ UNION ALL
                     FRPDownload("actors.list.gz", ftp_act);
                 if (cbFtp_Acs.Checked)
                     FRPDownload("actresses.list.gz", ftp_acs);
+				if (checkBoxDistributors.Checked)
+				{
+					FRPDownload("distributors.list.gz", ftp_distributors);
+				}
             }
             catch (Exception)
             {
@@ -1145,6 +1150,18 @@ UNION ALL
             });
         }
 
+		private void ftp_distributors(object sender, CopyToArgs e)
+		{
+			labelFtpDlSizeDistributors.Invoke((MethodInvoker)delegate
+			{
+				Setlabel(labelFtpDlSizeDistributors, sender, e);
+			});
+			progressBarDistributors.Invoke((MethodInvoker)delegate
+			{
+				progressBarDistributors.Value = Math.Max(0, Math.Min(100, (int)(((double)e.CurrentPosition / (double)e.TotalLength) * 100)));
+			});
+		}
+
         private void Setlabel(Label lbl, object sender, CopyToArgs e)
         {
             if (e.TotalLength == e.CurrentPosition)
@@ -1204,6 +1221,7 @@ UNION ALL
             lblFtpDLSizeSpeed_Aka.Text = string.Format("0 Mb of {0}", ftpClient.GetFileSize(ftpServerPath + "aka-titles.list.gz").ToFileSize(0));
             lblFtpDLSizeSpeed_Act.Text = string.Format("0 Mb of {0}", ftpClient.GetFileSize(ftpServerPath + "actors.list.gz").ToFileSize(0));
             lblFtpDLSizeSpeed_Acs.Text = string.Format("0 Mb of {0}", ftpClient.GetFileSize(ftpServerPath + "actresses.list.gz").ToFileSize(0));
+			labelFtpDlSizeDistributors.Text = string.Format("0 Mb of {0}", ftpClient.GetFileSize(ftpServerPath + "distributors.list.gz").ToFileSize(0));
         }
 
         private void FreeSpaceOK()

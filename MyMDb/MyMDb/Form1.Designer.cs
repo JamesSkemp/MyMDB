@@ -82,6 +82,9 @@
 			this.bntBullk = new System.Windows.Forms.Button();
 			this.pbProcessFTPData = new System.Windows.Forms.ProgressBar();
 			this.txtProcessData = new System.Windows.Forms.RichTextBox();
+			this.checkBoxDistributors = new System.Windows.Forms.CheckBox();
+			this.progressBarDistributors = new System.Windows.Forms.ProgressBar();
+			this.labelFtpDlSizeDistributors = new System.Windows.Forms.Label();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			this.gbConnectionError.SuspendLayout();
@@ -270,6 +273,9 @@
 			// 
 			// tabPage3
 			// 
+			this.tabPage3.Controls.Add(this.checkBoxDistributors);
+			this.tabPage3.Controls.Add(this.progressBarDistributors);
+			this.tabPage3.Controls.Add(this.labelFtpDlSizeDistributors);
 			this.tabPage3.Controls.Add(this.cbRemCompress);
 			this.tabPage3.Controls.Add(this.cbFtp_Acs);
 			this.tabPage3.Controls.Add(this.pb_Acs);
@@ -311,7 +317,7 @@
 			// cbRemCompress
 			// 
 			this.cbRemCompress.AutoSize = true;
-			this.cbRemCompress.Location = new System.Drawing.Point(6, 274);
+			this.cbRemCompress.Location = new System.Drawing.Point(6, 297);
 			this.cbRemCompress.Name = "cbRemCompress";
 			this.cbRemCompress.Size = new System.Drawing.Size(316, 17);
 			this.cbRemCompress.TabIndex = 56;
@@ -573,7 +579,7 @@
 			this.bntDownloadData.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.bntDownloadData.Enabled = false;
-			this.bntDownloadData.Location = new System.Drawing.Point(6, 245);
+			this.bntDownloadData.Location = new System.Drawing.Point(6, 268);
 			this.bntDownloadData.Name = "bntDownloadData";
 			this.bntDownloadData.Size = new System.Drawing.Size(752, 23);
 			this.bntDownloadData.TabIndex = 9;
@@ -714,6 +720,36 @@
 			this.txtProcessData.TabIndex = 2;
 			this.txtProcessData.Text = "";
 			// 
+			// checkBoxDistributors
+			// 
+			this.checkBoxDistributors.AutoSize = true;
+			this.checkBoxDistributors.Enabled = false;
+			this.checkBoxDistributors.Location = new System.Drawing.Point(6, 245);
+			this.checkBoxDistributors.Name = "checkBoxDistributors";
+			this.checkBoxDistributors.Size = new System.Drawing.Size(92, 17);
+			this.checkBoxDistributors.TabIndex = 59;
+			this.checkBoxDistributors.Text = "Distributor List";
+			this.checkBoxDistributors.UseVisualStyleBackColor = true;
+			// 
+			// progressBarDistributors
+			// 
+			this.progressBarDistributors.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBarDistributors.Location = new System.Drawing.Point(117, 245);
+			this.progressBarDistributors.Name = "progressBarDistributors";
+			this.progressBarDistributors.Size = new System.Drawing.Size(396, 17);
+			this.progressBarDistributors.TabIndex = 58;
+			// 
+			// labelFtpDlSizeDistributors
+			// 
+			this.labelFtpDlSizeDistributors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelFtpDlSizeDistributors.AutoSize = true;
+			this.labelFtpDlSizeDistributors.Location = new System.Drawing.Point(519, 246);
+			this.labelFtpDlSizeDistributors.Name = "labelFtpDlSizeDistributors";
+			this.labelFtpDlSizeDistributors.Size = new System.Drawing.Size(157, 13);
+			this.labelFtpDlSizeDistributors.TabIndex = 57;
+			this.labelFtpDlSizeDistributors.Text = "000 Mb of 000 Mb | 00.00 Mb/s";
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -792,6 +828,9 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckedListBox chklbSyncFiles;
         private System.Windows.Forms.Label lblProcessFTPData;
+		private System.Windows.Forms.CheckBox checkBoxDistributors;
+		private System.Windows.Forms.ProgressBar progressBarDistributors;
+		private System.Windows.Forms.Label labelFtpDlSizeDistributors;
     }
 }
 
