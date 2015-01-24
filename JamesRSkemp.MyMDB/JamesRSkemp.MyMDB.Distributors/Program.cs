@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace JamesRSkemp.MyMDB.Distributors
@@ -75,24 +76,25 @@ namespace JamesRSkemp.MyMDB.Distributors
 				{
 					Console.WriteLine("No quote.");
 					Console.WriteLine(lineData);
+					for (int i = 0; i < lineArrayLength; i++)
+					{
+						Console.WriteLine("	" + lineElements[i]);
+					}
 					noQuoteDisplayed = true;
 				}
 
-				//var distributor = parseLineData(lineData);
-
-				using (var db = new DatabaseModels.DistributorsEntities())
+				var distributor = parseLineData(lineData);
+				if (distributor == null)
 				{
-					try
-					{
-						//db.Distributors.Add(distributor);
-						//db.SaveChanges();
-
-
-					}
-					catch (Exception)
-					{
-						throw;
-					}
+					Console.WriteLine(lineData);
+					Console.WriteLine(lineArrayLength);
+					Console.WriteLine("Bad line found. Press any key to continue.");
+					Console.ReadKey();
+					break;
+				}
+				else
+				{
+					saveData(distributor);
 				}
 
 				// If there's a maximum number of distributors to parse, see if we've hit that limit.
@@ -110,22 +112,81 @@ namespace JamesRSkemp.MyMDB.Distributors
 			Console.ReadKey();
 		}
 
+		/// <summary>
+		/// Given a line, parse it and return a new distributor for saving into the database.
+		/// </summary>
+		/// <param name="lineData">Raw line from the data dump.</param>
+		/// <returns>Database distributor ready to be saved, or null if the data can't be parsed.</returns>
 		private static DatabaseModels.Distributor parseLineData(string lineData)
 		{
 			var distributor = new DatabaseModels.Distributor();
+			// Save the raw data in case we need to fix our parser.
 			distributor.RawData = lineData;
-			distributor.Title = null;
-			distributor.YearPlayed = null;
-			distributor.EpisodeName = null;
+
+			string[] lineElements = lineData.Split('\t');
+
+			if (lineElements.Length == 1)
+			{
+				// TODO log the line
+				return null;
+			}
+
+			// The first element should contain the title and year. It may also include episode information.
+			// First check to see if it's formatted like an episode.
+			var episodeMatch = Regex.Match(lineElements[0], @"^(.*) \(([^)]*)\) {(.*)}$");
+			if (episodeMatch.Success && episodeMatch.Groups.Count == 4)
+			{
+				distributor.Title = episodeMatch.Groups[1].Value;
+				distributor.YearPlayed = episodeMatch.Groups[2].Value;
+				distributor.EpisodeName = episodeMatch.Groups[3].Value;
+			}
+			else
+			{
+				// We have one other format we can check against.
+				var otherMatch = Regex.Match(lineElements[0], @"^(.*) \(([^)]*)\).*$");
+				if (otherMatch.Success && otherMatch.Groups.Count == 3)
+				{
+					distributor.Title = otherMatch.Groups[1].Value;
+					distributor.YearPlayed = otherMatch.Groups[2].Value;
+					distributor.EpisodeName = null;
+				}
+			}
+
+			// If our title is still empty, the data can't be trusted.
+			if (string.IsNullOrWhiteSpace(distributor.Title))
+			{
+				// TODO log the raw data
+				return null;
+			}
+
 			distributor.Distributor1 = null;
 			distributor.CountryCode = null;
 			distributor.YearDistributed = null;
 			distributor.Country = null;
 			distributor.Format = null;
-			
-
 
 			return distributor;
+		}
+
+		/// <summary>
+		/// Saves a distributor as a new record in the database.
+		/// </summary>
+		/// <param name="distributor">Data to add to the database.</param>
+		private static void saveData(DatabaseModels.Distributor distributor)
+		{
+			using (var db = new DatabaseModels.DistributorsEntities())
+			{
+				try
+				{
+					db.Distributors.Add(distributor);
+					db.SaveChanges();
+				}
+				catch (Exception)
+				{
+					// TODO log the exception
+					throw;
+				}
+			}
 		}
 	}
 }
