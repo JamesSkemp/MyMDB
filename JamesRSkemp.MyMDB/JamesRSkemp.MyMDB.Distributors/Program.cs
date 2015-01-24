@@ -11,12 +11,17 @@ namespace JamesRSkemp.MyMDB.Distributors
 {
 	class Program
 	{
+		private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
 		static void Main(string[] args)
 		{
+			logger.Info("Beginning to parse data.");
+
 			var distributorFilePath = System.Configuration.ConfigurationManager.AppSettings["DistributorFilePath"];
 
 			if (!File.Exists(distributorFilePath))
 			{
+				logger.Error("Distributors file cannot be found at {0}", distributorFilePath);
 				Console.WriteLine("Distributors file cannot be found.");
 				Console.WriteLine("Please update the application configuration with the location of the uncompressed file.");
 				Console.WriteLine("Press any key to end.");
@@ -42,47 +47,14 @@ namespace JamesRSkemp.MyMDB.Distributors
 
 			while (!reader.EndOfStream && (lineData = reader.ReadLine()) != null)
 			{
-				if (string.IsNullOrWhiteSpace(lineData) || lineData.StartsWith("========="))
+				if (string.IsNullOrWhiteSpace(lineData) || lineData.StartsWith("=========") || lineData.StartsWith("---------"))
 				{
 					continue;
-				}
-
-				string[] lineElements = lineData.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-
-				if (lineElements.Length == 1)
-				{
-					continue;
-				}
-
-				var lineArrayLength = lineElements.Length;
-				if (!tempColumnCounts.Contains(lineArrayLength))
-				{
-					Console.WriteLine(lineArrayLength);
-					Console.WriteLine(lineData);
-					for (int i = 0; i < lineArrayLength; i++)
-					{
-						Console.WriteLine("	" + lineElements[i]);
-					}
-					tempColumnCounts.Add(lineArrayLength);
-				}
-				else if (!tempColumnCounts2.Contains(lineArrayLength))
-				{
-					//Console.WriteLine(lineArrayLength);
-					//Console.WriteLine(lineData);
-					tempColumnCounts2.Add(lineArrayLength);
 				}
 
 				var distributor = parseLineData(lineData);
-				if (distributor == null)
+				if (distributor != null)
 				{
-					Console.WriteLine(lineData);
-					Console.WriteLine("Bad line found. Press any key to continue.");
-					Console.ReadKey();
-					break;
-				}
-				else
-				{
-					// TODO uncomment
 					saveData(distributor);
 				}
 
@@ -96,6 +68,7 @@ namespace JamesRSkemp.MyMDB.Distributors
 					}
 				}
 			}
+			logger.Info("Parsed {0} distributors.", distributorsParsed);
 			Console.WriteLine(string.Format("Parsed {0} distributors.", distributorsParsed));
 			Console.WriteLine("Press any key to end.");
 			Console.ReadKey();
@@ -116,7 +89,7 @@ namespace JamesRSkemp.MyMDB.Distributors
 
 			if (lineElements.Length < 2 || lineElements.Length > 3)
 			{
-				// TODO log the line
+				logger.Debug("Line does not contain a valid number of elements. {0}", lineData);
 				return null;
 			}
 
@@ -144,7 +117,7 @@ namespace JamesRSkemp.MyMDB.Distributors
 			// If our title is still empty, the data can't be trusted.
 			if (string.IsNullOrWhiteSpace(distributor.Title))
 			{
-				// TODO log the raw data
+				logger.Debug("No match for title for {0}", lineData);
 				return null;
 			}
 
@@ -178,7 +151,7 @@ namespace JamesRSkemp.MyMDB.Distributors
 
 			if (string.IsNullOrWhiteSpace(distributor.Distributor1) && string.IsNullOrWhiteSpace(distributor.YearDistributed))
 			{
-				// TODO log this
+				logger.Debug("No match beyond title for {0}", lineData);
 			}
 
 			return distributor;
@@ -197,10 +170,10 @@ namespace JamesRSkemp.MyMDB.Distributors
 					db.Distributors.Add(distributor);
 					db.SaveChanges();
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					// TODO log the exception
-					throw;
+					logger.Error("Database error: {0}", ex);
+					Console.WriteLine("Database error logged.");
 				}
 			}
 		}
