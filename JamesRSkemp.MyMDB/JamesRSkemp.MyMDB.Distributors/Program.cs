@@ -39,7 +39,6 @@ namespace JamesRSkemp.MyMDB.Distributors
 
 			List<int> tempColumnCounts = new List<int>();
 			List<int> tempColumnCounts2 = new List<int>();
-			var noQuoteDisplayed = false;
 
 			while (!reader.EndOfStream && (lineData = reader.ReadLine()) != null)
 			{
@@ -48,7 +47,7 @@ namespace JamesRSkemp.MyMDB.Distributors
 					continue;
 				}
 
-				string[] lineElements = lineData.Split('\t');
+				string[] lineElements = lineData.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
 				if (lineElements.Length == 1)
 				{
@@ -68,32 +67,22 @@ namespace JamesRSkemp.MyMDB.Distributors
 				}
 				else if (!tempColumnCounts2.Contains(lineArrayLength))
 				{
-					Console.WriteLine(lineArrayLength);
-					Console.WriteLine(lineData);
+					//Console.WriteLine(lineArrayLength);
+					//Console.WriteLine(lineData);
 					tempColumnCounts2.Add(lineArrayLength);
-				}
-				if (!noQuoteDisplayed && !lineData.StartsWith("\""))
-				{
-					Console.WriteLine("No quote.");
-					Console.WriteLine(lineData);
-					for (int i = 0; i < lineArrayLength; i++)
-					{
-						Console.WriteLine("	" + lineElements[i]);
-					}
-					noQuoteDisplayed = true;
 				}
 
 				var distributor = parseLineData(lineData);
 				if (distributor == null)
 				{
 					Console.WriteLine(lineData);
-					Console.WriteLine(lineArrayLength);
 					Console.WriteLine("Bad line found. Press any key to continue.");
 					Console.ReadKey();
 					break;
 				}
 				else
 				{
+					// TODO uncomment
 					saveData(distributor);
 				}
 
@@ -123,9 +112,9 @@ namespace JamesRSkemp.MyMDB.Distributors
 			// Save the raw data in case we need to fix our parser.
 			distributor.RawData = lineData;
 
-			string[] lineElements = lineData.Split('\t');
+			string[] lineElements = lineData.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
-			if (lineElements.Length == 1)
+			if (lineElements.Length < 2 || lineElements.Length > 3)
 			{
 				// TODO log the line
 				return null;
@@ -159,11 +148,38 @@ namespace JamesRSkemp.MyMDB.Distributors
 				return null;
 			}
 
-			distributor.Distributor1 = null;
-			distributor.CountryCode = null;
-			distributor.YearDistributed = null;
-			distributor.Country = null;
-			distributor.Format = null;
+			// Next we have either the distributor information, or year/country/format data.
+			var distributionMatch = Regex.Match(lineElements[1], @"^(.*) \[(.*)\]$");
+			if (distributionMatch.Success && distributionMatch.Groups.Count == 3)
+			{
+				distributor.Distributor1 = distributionMatch.Groups[1].Value;
+				distributor.CountryCode = distributionMatch.Groups[2].Value;
+			}
+			else
+			{
+				distributor.Distributor1 = null;
+				distributor.CountryCode = null;
+			}
+
+			var lastElement = lineElements[lineElements.Length - 1];
+			var yearCountryFormatMatch = Regex.Match(lastElement, @"^\(([^)]*)\) \(([^)]*)\) \(([^)]*)\)$");
+			if (yearCountryFormatMatch.Success && yearCountryFormatMatch.Groups.Count == 4)
+			{
+				distributor.YearDistributed = yearCountryFormatMatch.Groups[1].Value;
+				distributor.Country = yearCountryFormatMatch.Groups[2].Value;
+				distributor.Format = yearCountryFormatMatch.Groups[3].Value;
+			}
+			else
+			{
+				distributor.YearDistributed = null;
+				distributor.Country = null;
+				distributor.Format = null;
+			}
+
+			if (string.IsNullOrWhiteSpace(distributor.Distributor1) && string.IsNullOrWhiteSpace(distributor.YearDistributed))
+			{
+				// TODO log this
+			}
 
 			return distributor;
 		}
