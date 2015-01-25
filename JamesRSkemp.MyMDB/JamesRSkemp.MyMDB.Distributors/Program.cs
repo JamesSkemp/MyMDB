@@ -17,6 +17,15 @@ namespace JamesRSkemp.MyMDB.Distributors
 		{
 			logger.Info("Beginning to parse data.");
 
+			if (!tableExists())
+			{
+				Console.WriteLine("Distributors table cannot be found.");
+				Console.WriteLine("Please update the application configuration with a valid connection string.");
+				Console.WriteLine("Press any key to end.");
+				Console.ReadKey();
+				return;
+			}
+
 			var distributorFilePath = System.Configuration.ConfigurationManager.AppSettings["DistributorFilePath"];
 
 			if (!File.Exists(distributorFilePath))
@@ -155,6 +164,28 @@ namespace JamesRSkemp.MyMDB.Distributors
 			}
 
 			return distributor;
+		}
+
+		/// <summary>
+		/// Verify that the table exists in the database, before continuing.
+		/// </summary>
+		/// <returns>False if an exception is thrown trying to look at the table.</returns>
+		private static bool tableExists()
+		{
+			using (var db = new DatabaseModels.DistributorsEntities())
+			{
+				try
+				{
+					var distributorCheck = db.Distributors.Take(1).Select(d => d.Id).ToList();
+					return true;
+				}
+				catch (Exception ex)
+				{
+					logger.Error("Database error: {0}", ex.Message);
+					Console.WriteLine("Database error logged.");
+					return false;
+				}
+			}
 		}
 
 		/// <summary>
