@@ -172,7 +172,7 @@ namespace JamesRSkemp.MyMDB.Distributors
 				}
 				catch (Exception ex)
 				{
-					logger.Error("Database error: {0}", ex);
+					logger.Error("Database error: {0}", ex.Message);
 					Console.WriteLine("Database error logged.");
 				}
 			}
