@@ -90,6 +90,11 @@ namespace JamesRSkemp.MyMDB.Distributors
 		/// <returns>Database distributor ready to be saved, or null if the data can't be parsed.</returns>
 		private static DatabaseModels.Distributor parseLineData(string lineData)
 		{
+			if (lineData.Contains("{{SUSPENDED}}")) {
+				logger.Debug("Item appears to be suspended, and will be skipped. {0}", lineData);
+				return null;
+			}
+
 			var distributor = new DatabaseModels.Distributor();
 			// Save the raw data in case we need to fix our parser.
 			distributor.RawData = lineData;
