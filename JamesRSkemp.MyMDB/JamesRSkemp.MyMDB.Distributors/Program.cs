@@ -119,11 +119,15 @@ namespace JamesRSkemp.MyMDB.Distributors
 			else
 			{
 				// We have one other format we can check against.
-				var otherMatch = Regex.Match(lineElements[0], @"^(.*) \(([^)]*)\).*$");
+				var otherMatch = Regex.Match(lineElements[0], @"^(.*) \(([^)]{4})\).*$");
 				if (otherMatch.Success && otherMatch.Groups.Count == 3)
 				{
 					distributor.Title = otherMatch.Groups[1].Value;
 					distributor.YearPlayed = otherMatch.Groups[2].Value;
+					if (distributor.YearPlayed.Contains("?"))
+					{
+						distributor.YearPlayed = "1800";
+					}
 					distributor.EpisodeName = null;
 				}
 			}
