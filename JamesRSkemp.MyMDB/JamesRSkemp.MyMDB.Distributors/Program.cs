@@ -38,6 +38,8 @@ namespace JamesRSkemp.MyMDB.Distributors
 				return;
 			}
 
+			Console.WriteLine("Beginning to parse data.");
+
 			var maximumDistributors = 0;
 			int.TryParse(ConfigurationManager.AppSettings["MaximumDistributors"].ToString(), out maximumDistributors);
 
@@ -95,10 +97,6 @@ namespace JamesRSkemp.MyMDB.Distributors
 				return null;
 			}
 
-			var distributor = new DatabaseModels.Distributor();
-			// Save the raw data in case we need to fix our parser.
-			distributor.RawData = lineData;
-
 			string[] lineElements = lineData.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (lineElements.Length < 2 || lineElements.Length > 3)
@@ -106,6 +104,16 @@ namespace JamesRSkemp.MyMDB.Distributors
 				logger.Debug("Line does not contain a valid number of elements. {0}", lineData);
 				return null;
 			}
+			if (lineElements[0].ToLowerInvariant().EndsWith("(vg)"))
+			{
+				logger.Debug("Item appears to be a video game, and will be skipped. {0}", lineData);
+				return null;
+			}
+			var lastElement = lineElements[lineElements.Length - 1];
+
+			var distributor = new DatabaseModels.Distributor();
+			// Save the raw data in case we need to fix our parser.
+			distributor.RawData = lineData;
 
 			// The first element should contain the title and year. It may also include episode information.
 			// First check to see if it's formatted like an episode.
@@ -118,7 +126,7 @@ namespace JamesRSkemp.MyMDB.Distributors
 			}
 			else
 			{
-				// We have one other format we can check against.
+				// Check for a title with four characters in parens, which should be the year.
 				var otherMatch = Regex.Match(lineElements[0], @"^(.*) \(([^)]{4})\).*$");
 				if (otherMatch.Success && otherMatch.Groups.Count == 3)
 				{
@@ -127,8 +135,20 @@ namespace JamesRSkemp.MyMDB.Distributors
 					if (distributor.YearPlayed.Contains("?"))
 					{
 						distributor.YearPlayed = "1800";
+						logger.Debug("Unknown distribution year, so using 1800. {0}", lineData);
 					}
 					distributor.EpisodeName = null;
+				}
+				else
+				{
+					// Check if the parens starts with four digits. If it does, take them and ignore the rest.
+					var startingFourDigitsInParensMatch = Regex.Match(lineElements[0], @"^(.*) \((\d{4})[^)]*\).*$");
+					if (startingFourDigitsInParensMatch.Success && startingFourDigitsInParensMatch.Groups.Count == 3)
+					{
+						distributor.Title = startingFourDigitsInParensMatch.Groups[1].Value;
+						distributor.YearPlayed = startingFourDigitsInParensMatch.Groups[2].Value;
+						distributor.EpisodeName = null;
+					}
 				}
 			}
 
@@ -146,13 +166,17 @@ namespace JamesRSkemp.MyMDB.Distributors
 				distributor.Distributor1 = distributionMatch.Groups[1].Value;
 				distributor.CountryCode = distributionMatch.Groups[2].Value;
 			}
+			else if (!lineElements[1].Contains("("))
+			{
+				// If it doesn't contain a parens it should be the distributor.
+				distributor.Distributor1 = lineElements[1];
+			}
 			else
 			{
 				distributor.Distributor1 = null;
 				distributor.CountryCode = null;
 			}
 
-			var lastElement = lineElements[lineElements.Length - 1];
 			var yearCountryFormatMatch = Regex.Match(lastElement, @"^\(([^)]*)\) \(([^)]*)\) \(([^)]*)\)$");
 			if (yearCountryFormatMatch.Success && yearCountryFormatMatch.Groups.Count == 4)
 			{
