@@ -45,6 +45,8 @@
     <Compile Include="base files\FlatFile.cs" />
     <Compile Include="base files\ColumnHeader.cs" />
     <Compile Include="CountryListFile.cs" />
+    <Compile Include="Distributor.cs" />
+    <Compile Include="DistributorListFile.cs" />
     <Compile Include="GenreListFile.cs" />
     <Compile Include="PlotListFile.cs" />
     <Compile Include="TagLineListFile.cs" />
