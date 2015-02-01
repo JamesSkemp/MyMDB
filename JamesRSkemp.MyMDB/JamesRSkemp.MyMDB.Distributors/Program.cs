@@ -149,6 +149,19 @@ namespace JamesRSkemp.MyMDB.Distributors
 						distributor.YearPlayed = startingFourDigitsInParensMatch.Groups[2].Value;
 						distributor.EpisodeName = null;
 					}
+					else
+					{
+						// Check for four question marks at the start of the parens.
+						var startingQuestionsInParensMatch = Regex.Match(lineElements[0], @"^(.*) \((\?{4})[^)]*\).*$");
+						if (startingQuestionsInParensMatch.Success && startingQuestionsInParensMatch.Groups.Count == 3)
+						{
+							distributor.Title = startingFourDigitsInParensMatch.Groups[1].Value;
+							distributor.YearPlayed = "1800";
+							distributor.EpisodeName = null;
+						}
+
+
+					}
 				}
 			}
 
