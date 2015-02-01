@@ -159,6 +159,16 @@ namespace JamesRSkemp.MyMDB.Distributors
 				return null;
 			}
 
+			// Cleanup any parens surrounding the entire title.
+			if (distributor.Title.StartsWith("\"") && distributor.Title.EndsWith("\""))
+			{
+				var splitTitle = distributor.Title.Split('"');
+				if (splitTitle.Count() == 3)
+				{
+					distributor.Title = splitTitle[1];
+				}
+			}
+
 			// Next we have either the distributor information, or year/country/format data.
 			var distributionMatch = Regex.Match(lineElements[1], @"^(.*) \[(.*)\]$");
 			if (distributionMatch.Success && distributionMatch.Groups.Count == 3)
